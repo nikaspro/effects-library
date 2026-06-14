@@ -28,64 +28,66 @@
 
   const favoritesKey='valera-text-favorites';
   const textGrid=document.querySelector('#textPage .grid');
+  const libraryCards=[...document.querySelectorAll('#textPage .text-card,#textPage .source-card')];
+  const originalOrder=new Map(libraryCards.map((card,index)=>[card,index]));
+  const cardKey=card=>card.dataset.id||card.dataset.copy;
+  const cardName=card=>card.dataset.copy||card.querySelector('.source-name')?.textContent||cardKey(card);
   let favorites=[];
   try{favorites=JSON.parse(localStorage.getItem(favoritesKey)||'[]')}
   catch{favorites=[]}
 
-  const textCards=[...document.querySelectorAll('#textPage .text-card')];
-
   function renderFavorites(){
     if(!textGrid)return;
-    const favoriteCards=favorites
-      .map(name=>textCards.find(card=>card.dataset.copy===name))
-      .filter(Boolean);
-    const regularCards=textCards.filter(card=>!favorites.includes(card.dataset.copy));
-
-    [...favoriteCards,...regularCards].forEach(card=>textGrid.appendChild(card));
-
-    textCards.forEach(card=>{
-      const active=favorites.includes(card.dataset.copy);
+    const sorted=[...libraryCards].sort((a,b)=>{
+      const ai=favorites.indexOf(cardKey(a));
+      const bi=favorites.indexOf(cardKey(b));
+      if(ai!==-1&&bi!==-1)return ai-bi;
+      if(ai!==-1)return-1;
+      if(bi!==-1)return 1;
+      return originalOrder.get(a)-originalOrder.get(b);
+    });
+    sorted.forEach(card=>textGrid.appendChild(card));
+    libraryCards.forEach(card=>{
+      const active=favorites.includes(cardKey(card));
       const button=card.querySelector('.favorite-toggle');
       card.classList.toggle('is-favorite',active);
       if(button){
         button.classList.toggle('is-favorite',active);
         button.setAttribute('aria-pressed',String(active));
-        button.setAttribute('aria-label',`${active?'Убрать':'Добавить'} ${card.dataset.copy} ${active?'из':'в'} избранное`);
+        button.setAttribute('aria-label',`${active?'Убрать':'Добавить'} ${cardName(card)} ${active?'из':'в'} избранное`);
         button.title=active?'Убрать из избранного':'Добавить в избранное';
       }
     });
   }
 
-  textCards.forEach(card=>{
+  libraryCards.forEach(card=>{
     const button=card.querySelector('.favorite-toggle');
     if(!button)return;
     button.addEventListener('click',event=>{
       event.stopPropagation();
-      const name=card.dataset.copy;
-      if(favorites.includes(name)){
-        favorites=favorites.filter(item=>item!==name);
-      }else{
-        favorites.push(name);
-      }
+      const key=cardKey(card);
+      favorites=favorites.includes(key)?favorites.filter(item=>item!==key):[...favorites,key];
       localStorage.setItem(favoritesKey,JSON.stringify(favorites));
       renderFavorites();
     });
   });
-
   renderFavorites();
 
   document.querySelectorAll('[data-letters]').forEach(el=>{
     const text=el.textContent;
-    el.innerHTML=[...text].map((char,i)=>
-      `<span class="letter-char anim-target" style="--i:${i}">${char===' '?'&nbsp;':char}</span>`
-    ).join('');
+    el.innerHTML=[...text].map((char,i)=>`<span class="letter-char anim-target" style="--i:${i}">${char===' '?'&nbsp;':char}</span>`).join('');
   });
   document.querySelectorAll('[data-wave]').forEach(el=>{
     const text=el.textContent;
-    el.innerHTML=[...text].map((char,i)=>
-      `<span class="wave-char anim-target" style="--i:${i}">${char===' '?'&nbsp;':char}</span>`
-    ).join('');
+    el.innerHTML=[...text].map((char,i)=>`<span class="wave-char anim-target" style="--i:${i}">${char===' '?'&nbsp;':char}</span>`).join('');
   });
+
+  const showToast=text=>{
+    toast.textContent=text;
+    toast.classList.add('is-visible');
+    clearTimeout(toastTimer);
+    toastTimer=setTimeout(()=>toast.classList.remove('is-visible'),1600);
+  };
 
   document.querySelectorAll('.text-card').forEach(card=>{
     card.addEventListener('mouseenter',()=>{
@@ -94,47 +96,45 @@
       card.classList.add('is-playing');
     });
     card.addEventListener('mouseleave',()=>card.classList.remove('is-playing'));
-
     const copyEffect=async()=>{
       const value=card.dataset.copy;
       try{await navigator.clipboard.writeText(value)}
       catch{
         const ta=document.createElement('textarea');
-        ta.value=value;
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand('copy');
-        ta.remove();
+        ta.value=value;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();
       }
-      toast.textContent='Скопировано: '+value;
-      toast.classList.add('is-visible');
-      clearTimeout(toastTimer);
-      toastTimer=setTimeout(()=>toast.classList.remove('is-visible'),1600);
+      showToast('Скопировано: '+value);
     };
-
     card.addEventListener('click',copyEffect);
     card.addEventListener('keydown',e=>{
       if(e.target.closest('.favorite-toggle'))return;
-      if(e.key==='Enter'||e.key===' '){
-        e.preventDefault();
-        copyEffect();
-      }
+      if(e.key==='Enter'||e.key===' '){e.preventDefault();copyEffect()}
     });
   });
 
-  document.querySelectorAll('.hero-card').forEach(card=>{
+  document.querySelectorAll('.source-card').forEach(card=>{
     const frame=card.querySelector('iframe');
-    const url=card.dataset.demo;
+    const openSource=()=>open(card.dataset.url,'_blank','noopener');
     card.addEventListener('mouseenter',()=>{
-      frame.src=url;
+      frame.src=card.dataset.embed;
       card.classList.add('is-playing');
     });
     card.addEventListener('mouseleave',()=>{
       frame.src='about:blank';
       card.classList.remove('is-playing');
     });
-    card.querySelector('.preview').addEventListener('click',()=>{
-      open(url.replace('?preview=1',''),'_blank');
+    card.addEventListener('click',openSource);
+    card.addEventListener('keydown',e=>{
+      if(e.target.closest('.favorite-toggle'))return;
+      if(e.key==='Enter'||e.key===' '){e.preventDefault();openSource()}
     });
+  });
+
+  document.querySelectorAll('.hero-card').forEach(card=>{
+    const frame=card.querySelector('iframe');
+    const url=card.dataset.demo;
+    card.addEventListener('mouseenter',()=>{frame.src=url;card.classList.add('is-playing')});
+    card.addEventListener('mouseleave',()=>{frame.src='about:blank';card.classList.remove('is-playing')});
+    card.querySelector('.preview').addEventListener('click',()=>open(url.replace('?preview=1',''),'_blank'));
   });
 })();
