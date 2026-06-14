@@ -1,0 +1,16 @@
+{
+  "source": "https://gsap.com/text/",
+  "sourceTag": "GSAP",
+  "importedAt": "2026-06-14",
+  "usage": "Reference metadata and embedded original CodePen demos. Source code remains hosted by the original authors.",
+  "items": [
+    {"id":"gsap:the-police","title":"The Police","author":"Pete Barr","demo":"https://codepen.io/petebarr/pen/ZEYXrBK","embed":"https://codepen.io/petebarr/embed/preview/ZEYXrBK?default-tab=result&theme-id=dark","tags":["GSAP","text","community-demo"]},
+    {"id":"gsap:scifi-stuff","title":"SciFi Stuff","author":"Mario Luevanos","demo":"https://codepen.io/marioluevanos/pen/XKqNZB","embed":"https://codepen.io/marioluevanos/embed/preview/XKqNZB?default-tab=result&theme-id=dark","tags":["GSAP","text","community-demo"]},
+    {"id":"gsap:code-driven-animation","title":"Code Driven Animation","author":"Tom Miller","demo":"https://codepen.io/creativeocean/pen/ByBogvj","embed":"https://codepen.io/creativeocean/embed/preview/ByBogvj?default-tab=result&theme-id=dark","tags":["GSAP","text","community-demo"]},
+    {"id":"gsap:jello","title":"Jello","author":"Pete Barr","demo":"https://codepen.io/petebarr/pen/LYzBoeg","embed":"https://codepen.io/petebarr/embed/preview/LYzBoeg?default-tab=result&theme-id=dark","tags":["GSAP","text","community-demo"]},
+    {"id":"gsap:alphabet-soup","title":"Alphabet Soup","author":"Ryan Mulligan","demo":"https://codepen.io/hexagoncircle/pen/ExoKBgW","embed":"https://codepen.io/hexagoncircle/embed/preview/ExoKBgW?default-tab=result&theme-id=dark","tags":["GSAP","text","community-demo"]},
+    {"id":"gsap:scramble-cursor","title":"Scramble Cursor Effect","author":"Tom Miller","demo":"https://codepen.io/creativeocean/pen/NPWLwJM","embed":"https://codepen.io/creativeocean/embed/preview/NPWLwJM?default-tab=result&theme-id=dark","tags":["GSAP","ScrambleText","SplitText","community-demo"]},
+    {"id":"gsap:modulofont","title":"modulofont","author":"Benoit Wimart","demo":"https://codepen.io/benoitwimart/pen/NWxWYYN","embed":"https://codepen.io/benoitwimart/embed/preview/NWxWYYN?default-tab=result&theme-id=dark","tags":["GSAP","text","community-demo"]},
+    {"id":"gsap:dance-with-me","title":"Dance With Me","author":"Elegant Seagulls","demo":"https://codepen.io/elegantseagulls/pen/wvazXLe","embed":"https://codepen.io/elegantseagulls/embed/preview/wvazXLe?default-tab=result&theme-id=dark","tags":["GSAP","text","community-demo"]}
+  ]
+}
