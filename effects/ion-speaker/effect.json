@@ -1,0 +1,12 @@
+{
+  "id": "ion-speaker",
+  "name": "ION Speaker Prototype",
+  "description": "WebGL product changes camera angle, lighting and material focus by scene.",
+  "category": "product-storytelling",
+  "interaction": ["scroll", "pointer"],
+  "dependencies": ["three.js", "RoundedBoxGeometry"],
+  "demo": "/effects/ion-speaker/",
+  "source": "/effects/ion-speaker/index.html",
+  "customization": ["scene cameras", "text", "material", "pattern", "lighting"],
+  "status": "approved"
+}
