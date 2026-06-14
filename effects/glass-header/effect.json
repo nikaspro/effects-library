@@ -1,0 +1,19 @@
+{
+  "id": "glass-header",
+  "name": "Glass Header",
+  "description": "Стеклянная навигация умеренно расширяется и слегка следует за курсором.",
+  "category": "hover",
+  "interaction": [
+    "pointer"
+  ],
+  "dependencies": [],
+  "demo": "/effects/glass-header/",
+  "source": "/effects/glass-header/index.html",
+  "customization": [
+    "compact/expanded размеры",
+    "blur",
+    "пункты меню",
+    "инерция"
+  ],
+  "status": "approved"
+}
