@@ -1,59 +1,74 @@
 <!doctype html>
-<html lang="ru" data-theme="dark">
+<html data-theme="dark" lang="ru">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>catalog</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Stack+Sans+Headline:wght@200..700&display=swap" rel="stylesheet">
-<style>
-:root{--bg:#080a0f;--text:#f5f7fb;--line:#222833}
-html[data-theme="light"]{--bg:#f1f1ed;--text:#111216;--line:#d8d8d1}
-*{box-sizing:border-box}html{background:var(--bg)}body{margin:0;background:var(--bg);color:var(--text);font-family:"Stack Sans Headline",Arial,sans-serif;transition:.4s}
-main{width:min(1540px,calc(100% - 56px));margin:auto;padding:34px 0 110px}
-h1{position:sticky;top:20px;z-index:20;margin:0 0 170px;text-align:center;font-size:clamp(190px,33vw,500px);line-height:.72;letter-spacing:-.075em;font-weight:560;transform:scale(var(--scale,1));transform-origin:top center;mix-blend-mode:difference;color:#fff;cursor:pointer;will-change:transform}
-.theme{position:fixed;right:22px;top:20px;z-index:30;width:64px;height:34px;border-radius:99px;border:1px solid var(--line);background:color-mix(in srgb,var(--bg) 85%,transparent);color:var(--text);cursor:pointer}
-.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:58px;row-gap:86px}
-.card{cursor:pointer}.preview{position:relative;aspect-ratio:4/3;overflow:hidden;background:#050609}iframe,.poster{position:absolute;inset:0;width:100%;height:100%;border:0}iframe{opacity:0;transition:.25s}.poster{display:grid;place-items:center;background:radial-gradient(circle at 50% 40%,#1a2030,#06080d);transition:.25s}.poster span{font-size:12px;text-transform:uppercase;letter-spacing:.16em;color:#8f98a8}.card.is-playing iframe{opacity:1}.card.is-playing .poster{opacity:0;pointer-events:none}.title{margin-top:12px;font-size:16px;font-weight:500}
-@media(max-width:1100px){.grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:720px){main{width:calc(100% - 28px)}h1{font-size:43vw;margin-bottom:92px}.grid{grid-template-columns:1fr;row-gap:46px}}
-</style>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>Valera Motion Library</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Stack+Sans+Headline:wght@200..700&amp;display=swap" rel="stylesheet"/>
+<link href="assets/catalog.css" rel="stylesheet"/>
 </head>
 <body>
-<button class="theme" id="theme">◐</button>
-<main><h1 id="title">catalog</h1><section class="grid"><article class="card" data-demo="effects/ascii-cursor-field/?preview=1">
-      <div class="preview"><iframe title="ASCII Cursor Field"></iframe><div class="poster"><span>cursor</span></div></div>
-      <div class="title">ASCII Cursor Field</div>
-    </article>
-<article class="card" data-demo="effects/webgl-footer-object/?preview=1">
-      <div class="preview"><iframe title="WebGL Footer Object"></iframe><div class="poster"><span>webgl</span></div></div>
-      <div class="title">WebGL Footer Object</div>
-    </article>
-<article class="card" data-demo="effects/scroll-disintegration/?preview=1">
-      <div class="preview"><iframe title="Scroll Disintegration"></iframe><div class="poster"><span>scroll</span></div></div>
-      <div class="title">Scroll Disintegration</div>
-    </article>
-<article class="card" data-demo="effects/glass-header/?preview=1">
-      <div class="preview"><iframe title="Glass Header"></iframe><div class="poster"><span>hover</span></div></div>
-      <div class="title">Glass Header</div>
-    </article>
-<article class="card" data-demo="effects/ion-speaker/?preview=1">
-      <div class="preview"><iframe title="ION Speaker Prototype"></iframe><div class="poster"><span>product-storytelling</span></div></div>
-      <div class="title">ION Speaker Prototype</div>
-    </article></section></main>
-<script>
-const root=document.documentElement;
-root.dataset.theme=localStorage.getItem('catalog-theme')||'dark';
-theme.onclick=()=>{root.dataset.theme=root.dataset.theme==='dark'?'light':'dark';localStorage.setItem('catalog-theme',root.dataset.theme)};
-const title=document.querySelector('#title');
-addEventListener('scroll',()=>{const p=Math.min(1,scrollY/900);title.style.setProperty('--scale',1-.88*(1-Math.pow(1-p,3)))},{passive:true});
-title.onclick=()=>scrollTo({top:0,behavior:'smooth'});
-document.querySelectorAll('.card').forEach(card=>{
- const frame=card.querySelector('iframe'),url=card.dataset.demo;
- card.onmouseenter=()=>{frame.src=url;card.classList.add('is-playing')};
- card.onmouseleave=()=>{frame.src='about:blank';card.classList.remove('is-playing')};
- card.onclick=()=>open(url.replace('?preview=1',''),'_blank');
-});
-</script>
+<div class="header-shell">
+<header class="glass-header" id="glassHeader">
+<a class="brand brand-drop" href="#hero" aria-label="valera"><span class="brand-letter" style="--i:0">v</span><span class="brand-letter" style="--i:1">a</span><span class="brand-letter" style="--i:2">l</span><span class="brand-letter" style="--i:3">e</span><span class="brand-letter" style="--i:4">r</span><span class="brand-letter" style="--i:5">a</span></a>
+<nav aria-label="Разделы" class="tabs">
+<a class="tab is-active" data-page-link="hero" href="#hero">Hero-экран</a>
+<a class="tab" data-page-link="text" href="#text">Текст</a>
+</nav>
+<button aria-label="Переключить тему" class="theme-toggle" id="themeToggle" type="button">◐</button>
+</header>
+</div>
+<main>
+<section class="page" data-page="hero" id="heroPage">
+<div class="grid">
+<article class="card hero-card" data-demo="effects/ascii-cursor-field/?preview=1">
+<div class="preview"><iframe title="ASCII Cursor Field"></iframe><div class="poster"><span>cursor</span></div></div>
+<div class="card-title">ASCII Cursor Field</div>
+</article>
+<article class="card hero-card" data-demo="effects/webgl-footer-object/?preview=1">
+<div class="preview"><iframe title="WebGL Footer Object"></iframe><div class="poster"><span>webgl</span></div></div>
+<div class="card-title">WebGL Footer Object</div>
+</article>
+<article class="card hero-card" data-demo="effects/scroll-disintegration/?preview=1">
+<div class="preview"><iframe title="Scroll Disintegration"></iframe><div class="poster"><span>scroll</span></div></div>
+<div class="card-title">Scroll Disintegration</div>
+</article>
+<article class="card hero-card" data-demo="effects/glass-header/?preview=1">
+<div class="preview"><iframe title="Glass Header"></iframe><div class="poster"><span>header</span></div></div>
+<div class="card-title">Glass Header</div>
+</article>
+<article class="card hero-card" data-demo="effects/ion-speaker/?preview=1">
+<div class="preview"><iframe title="ION Speaker Prototype"></iframe><div class="poster"><span>product story</span></div></div>
+<div class="card-title">ION Speaker Prototype</div>
+</article>
+</div>
+</section>
+<section class="page" data-page="text" hidden="" id="textPage">
+<div class="grid">
+<article aria-label="Скопировать: Mask Reveal" class="card text-card" data-copy="Mask Reveal" role="button" tabindex="0">
+<div class="preview"><div class="text-stage"><div class="text-sample center"><span class="text-mask"><span class="mask-line anim-target" style="--d:0.00s">Mask</span></span><span class="text-mask"><span class="mask-line anim-target" style="--d:0.11s">Reveal</span></span></div></div></div>
+</article>
+<article aria-label="Скопировать: Letter Drop" class="card text-card letters-card" data-copy="Letter Drop" role="button" tabindex="0">
+<div class="preview"><div class="text-stage"><div class="text-sample center letter-wrap" data-letters="">Letter Drop</div></div></div>
+</article>
+<article aria-label="Скопировать: Blur Focus" class="card text-card" data-copy="Blur Focus" role="button" tabindex="0">
+<div class="preview"><div class="text-stage"><div class="text-sample center blur-focus anim-target">Blur Focus</div></div></div>
+</article>
+<article aria-label="Скопировать: Horizontal Wipe" class="card text-card" data-copy="Horizontal Wipe" role="button" tabindex="0">
+<div class="preview"><div class="text-stage"><div class="text-sample center wipe-text anim-target">Horizontal Wipe</div></div></div>
+</article>
+<article aria-label="Скопировать: Split Direction" class="card text-card" data-copy="Split Direction" role="button" tabindex="0">
+<div class="preview"><div class="text-stage"><div class="text-sample center"><span class="split-line split-left anim-target">Split</span><span class="split-line split-right anim-target">Direction</span></div></div></div>
+</article>
+<article aria-label="Скопировать: Wave Up" class="card text-card wave-card" data-copy="Wave Up" role="button" tabindex="0">
+<div class="preview"><div class="text-stage"><div class="text-sample center wave-wrap" data-wave="">Wave Up</div></div></div>
+</article>
+</div>
+</section>
+</main>
+<div class="toast" id="toast">Скопировано</div>
+<script src="assets/catalog.js"></script>
 </body>
 </html>
