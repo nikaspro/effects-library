@@ -1,0 +1,19 @@
+{
+  "id": "ascii-cursor-field",
+  "name": "ASCII Cursor Field",
+  "description": "Символы собираются в текст, реагируют на курсор и плавно меняют композицию.",
+  "category": "cursor",
+  "interaction": [
+    "pointer",
+    "automatic-layout"
+  ],
+  "dependencies": [],
+  "demo": "/effects/ascii-cursor-field/",
+  "source": "/effects/ascii-cursor-field/index.html",
+  "customization": [
+    "CONFIG.lines",
+    "сила реакции курсора",
+    "скорость смены композиций"
+  ],
+  "status": "approved"
+}
