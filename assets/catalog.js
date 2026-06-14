@@ -1,4 +1,39 @@
 (()=>{
+  const GSAP_VERSION='3.15.0';
+  const loadScript=src=>new Promise((resolve,reject)=>{
+    const existing=document.querySelector(`script[src="${src}"]`);
+    if(existing){
+      if(existing.dataset.loaded==='true')resolve();
+      else existing.addEventListener('load',resolve,{once:true});
+      return;
+    }
+    const script=document.createElement('script');
+    script.src=src;
+    script.defer=true;
+    script.crossOrigin='anonymous';
+    script.onload=()=>{script.dataset.loaded='true';resolve()};
+    script.onerror=()=>reject(new Error(`Не удалось загрузить ${src}`));
+    document.head.appendChild(script);
+  });
+
+  window.gsapReady=(async()=>{
+    const base=`https://cdn.jsdelivr.net/npm/gsap@${GSAP_VERSION}/dist/`;
+    await loadScript(base+'gsap.min.js');
+    await Promise.all([
+      loadScript(base+'SplitText.min.js'),
+      loadScript(base+'ScrambleTextPlugin.min.js'),
+      loadScript(base+'TextPlugin.min.js')
+    ]);
+    const plugins=[window.SplitText,window.ScrambleTextPlugin,window.TextPlugin].filter(Boolean);
+    if(window.gsap&&plugins.length)window.gsap.registerPlugin(...plugins);
+    document.documentElement.classList.add('gsap-ready');
+    return {gsap:window.gsap,SplitText:window.SplitText,ScrambleTextPlugin:window.ScrambleTextPlugin,TextPlugin:window.TextPlugin};
+  })().catch(error=>{
+    console.error('[Valera Motion Library] GSAP loading error:',error);
+    document.documentElement.classList.add('gsap-error');
+    return null;
+  });
+
   const root=document.documentElement;
   const pageEls=[...document.querySelectorAll('[data-page]')];
   const pageLinks=[...document.querySelectorAll('[data-page-link]')];
