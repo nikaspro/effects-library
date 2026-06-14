@@ -1,0 +1,12 @@
+{
+  "id": "webgl-footer-object",
+  "name": "WebGL Footer Object",
+  "description": "A procedural 3D object reacts to pointer movement and scroll speed.",
+  "category": "webgl",
+  "interaction": ["pointer", "scroll"],
+  "dependencies": ["three.js", "EffectComposer", "UnrealBloomPass"],
+  "demo": "/effects/webgl-footer-object/",
+  "source": "/effects/webgl-footer-object/index.html",
+  "customization": ["object form", "materials", "rotation strength", "reveal timing"],
+  "status": "approved"
+}
