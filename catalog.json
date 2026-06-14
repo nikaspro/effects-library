@@ -60,6 +60,19 @@
       "source": "/effects/ion-speaker/index.html",
       "customization": ["камера каждой сцены", "тексты", "материал", "паттерн", "свет"],
       "status": "approved"
+    },
+    {
+      "id": "scroll-text-fill",
+      "name": "Scroll Text Fill",
+      "description": "Текст постепенно закрашивается по буквам в порядке чтения при прокрутке страницы.",
+      "category": "text",
+      "interaction": ["scroll"],
+      "dependencies": ["gsap", "ScrollTrigger"],
+      "demo": "/effects/scroll-text-fill/",
+      "source": "/effects/scroll-text-fill/index.html",
+      "reference": "https://www.thebendclub.com",
+      "customization": ["текст", "цвет до закрашивания", "активный цвет", "скорость и длина скролла"],
+      "status": "approved"
     }
   ]
 }
