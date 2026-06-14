@@ -63,6 +63,19 @@
 
   const favoritesKey='valera-text-favorites';
   const textGrid=document.querySelector('#textPage .grid');
+
+  if(textGrid&&!textGrid.querySelector('[data-id="effect:scroll-text-fill"]')){
+    const card=document.createElement('article');
+    card.className='card source-card';
+    card.dataset.id='effect:scroll-text-fill';
+    card.dataset.url='effects/scroll-text-fill/';
+    card.dataset.embed='effects/scroll-text-fill/?preview=1';
+    card.tabIndex=0;
+    card.setAttribute('role','link');
+    card.innerHTML=`<button class="favorite-toggle" type="button" aria-label="Добавить Scroll Text Fill в избранное" aria-pressed="false" title="Добавить в избранное"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78Z"/></svg></button><div class="preview"><iframe title="Scroll Text Fill"></iframe><div class="source-poster"><span class="source-tag">THE BEND CLUB</span><div class="source-name">Scroll Text Fill</div><div class="source-author">GSAP · ScrollTrigger</div></div></div>`;
+    textGrid.insertBefore(card,textGrid.querySelector('.source-card'));
+  }
+
   const libraryCards=[...document.querySelectorAll('#textPage .text-card,#textPage .source-card')];
   const originalOrder=new Map(libraryCards.map((card,index)=>[card,index]));
   const cardKey=card=>card.dataset.id||card.dataset.copy;
