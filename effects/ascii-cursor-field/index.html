@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ASCII Cursor Animation</title>
+<style>
+  :root{--bg:#f3f2ed;--fg:#151515}
+  *{box-sizing:border-box}
+  html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--fg);font-family:Arial,Helvetica,sans-serif}
+  canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
+  .meta{position:fixed;z-index:2;left:18px;right:18px;top:16px;display:flex;justify-content:space-between;gap:20px;font:700 10px/1.05 "Courier New",monospace;text-transform:uppercase;pointer-events:none}
+  .meta span:last-child{text-align:right}
+  .hint{position:fixed;z-index:2;left:18px;bottom:16px;font:700 10px/1 "Courier New",monospace;text-transform:uppercase;pointer-events:none}
+  .cursor{position:fixed;z-index:3;width:26px;height:26px;border:1px solid var(--fg);border-radius:50%;transform:translate(-50%,-50%);pointer-events:none;opacity:0;transition:opacity .2s}
+  @media (pointer:coarse){.cursor{display:none}.hint{display:none}}
+</style>
+</head>
+<body>
+<div class="meta"><span>EGOR.DIGITAL / INTERACTIVE TYPE</span><span>MOVE THE CURSOR<br>THROUGH THE TEXT</span></div>
+<canvas id="scene"></canvas>
+<div class="hint">CURSOR REPELS THE CHARACTERS — CLICK TO RESET</div>
+<div class="cursor" id="cursor"></div>
+<script>
+(() => {
+  const CONFIG = {
+    lines: ['EGOR', 'DIGITAL'],
+    symbols: '01@#%&*+=/\\<>[]{}',
+    gapDesktop: 8,
+    gapMobile: 7,
+    cursorRadius: 125,
+    cursorForce: 2.35,
+    spring: 0.036,
+    friction: 0.86,
+    fontFamily: 'Arial Black, Arial, sans-serif'
+  };
+
+  const canvas = document.getElementById('scene');
+  const ctx = canvas.getContext('2d');
+  const cursorEl = document.getElementById('cursor');
+  const mask = document.createElement('canvas');
+  const mctx = mask.getContext('2d', {willReadFrequently:true});
+  let dpr = 1, width = 0, height = 0, particles = [], pointer = {x:-9999,y:-9999,active:false};
+
+  const rand = (a,b) => a + Math.random()*(b-a);
+  const symbol = () => CONFIG.symbols[(Math.random()*CONFIG.symbols.length)|0];
+
+  function fitCanvas(){
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    width = innerWidth; height = innerHeight;
+    canvas.width = Math.round(width*dpr); canvas.height = Math.round(height*dpr);
+    canvas.style.width = width+'px'; canvas.style.height = height+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    mask.width = width; mask.height = height;
+    buildTargets();
+  }
+
+  function drawMask(){
+    mctx.clearRect(0,0,width,height);
+    mctx.fillStyle = '#000';
+    mctx.textAlign = 'center';
+    mctx.textBaseline = 'middle';
+    const side = Math.max(20, width*.035);
+    const availableW = width - side*2;
+    const availableH = height*.68;
+    let size = Math.min(availableW/5.15, availableH/2.25);
+    size = Math.max(70, Math.min(size, 250));
+    mctx.font = `900 ${size}px ${CONFIG.fontFamily}`;
+    const lineGap = size*.72;
+    const centerY = height*.51;
+    CONFIG.lines.forEach((line,i) => {
+      const y = centerY + (i-(CONFIG.lines.length-1)/2)*lineGap;
+      mctx.fillText(line, width/2, y);
+    });
+  }
+
+  function buildTargets(){
+    drawMask();
+    const pixels = mctx.getImageData(0,0,width,height).data;
+    const gap = width < 700 ? CONFIG.gapMobile : CONFIG.gapDesktop;
+    const targets = [];
+    const offset = gap*.5;
+    for(let y=0;y<height;y+=gap){
+      for(let x=0;x<width;x+=gap){
+        if(pixels[((y|0)*width+(x|0))*4+3] > 120){
+          targets.push({x:x+rand(-offset*.22,offset*.22),y:y+rand(-offset*.22,offset*.22)});
+        }
+      }
+    }
+    for(let i=targets.length-1;i>0;i--){
+      const j=(Math.random()*(i+1))|0; [targets[i],targets[j]]=[targets[j],targets[i]];
+    }
+    const old = particles;
+    particles = targets.map((t,i) => {
+      const p = old[i];
+      return p ? {...p, tx:t.x, ty:t.y} : {
+        x: width/2 + rand(-width*.45,width*.45),
+        y: height/2 + rand(-height*.45,height*.45),
+        tx:t.x, ty:t.y, vx:rand(-2,2), vy:rand(-2,2), glyph:symbol(), phase:rand(0,Math.PI*2)
+      };
+    });
+  }
+
+  function reset(){
+    particles.forEach(p => {
+      p.x = width/2 + rand(-width*.48,width*.48);
+      p.y = height/2 + rand(-height*.48,height*.48);
+      p.vx = rand(-5,5); p.vy = rand(-5,5);
+    });
+  }
+
+  function update(){
+    for(const p of particles){
+      if(pointer.active){
+        const dx=p.x-pointer.x, dy=p.y-pointer.y;
+        const d2=dx*dx+dy*dy;
+        const r=CONFIG.cursorRadius;
+        if(d2<r*r && d2>0.1){
+          const d=Math.sqrt(d2);
+          const force=(1-d/r)*CONFIG.cursorForce;
+          p.vx += dx/d*force;
+          p.vy += dy/d*force;
+        }
+      }
+      p.vx += (p.tx-p.x)*CONFIG.spring;
+      p.vy += (p.ty-p.y)*CONFIG.spring;
+      p.vx *= CONFIG.friction;
+      p.vy *= CONFIG.friction;
+      p.x += p.vx;
+      p.y += p.vy;
+    }
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,width,height);
+    ctx.fillStyle='#151515';
+    const fontSize = width < 700 ? 7 : 8;
+    ctx.font=`700 ${fontSize}px "Courier New", monospace`;
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    for(const p of particles){
+      const speed=Math.abs(p.vx)+Math.abs(p.vy);
+      if(speed>3 && Math.random()<.025) p.glyph=symbol();
+      ctx.globalAlpha=Math.max(.42,1-Math.min(speed/18,.58));
+      ctx.fillText(p.glyph,p.x,p.y);
+    }
+    ctx.globalAlpha=1;
+    update();
+    requestAnimationFrame(draw);
+  }
+
+  addEventListener('pointermove', e => {
+    pointer.x=e.clientX; pointer.y=e.clientY; pointer.active=true;
+    cursorEl.style.left=e.clientX+'px'; cursorEl.style.top=e.clientY+'px'; cursorEl.style.opacity='1';
+  }, {passive:true});
+  addEventListener('pointerleave', () => {pointer.active=false;cursorEl.style.opacity='0'});
+  addEventListener('pointerdown', reset);
+  addEventListener('resize', fitCanvas);
+  fitCanvas();
+  requestAnimationFrame(draw);
+})();
+</script>
+</body>
+</html>
