@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Scroll Disintegration</title>
+<style>
+:root{--bg:#090a0d;--fg:#f4f5f7;--muted:#888d99}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--fg);font-family:Arial,Helvetica,sans-serif}
+body{height:340vh;overflow-x:hidden}
+.stage{position:fixed;inset:0;display:grid;place-items:center;overflow:hidden}
+.glow{position:absolute;width:min(78vw,900px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,#5064ff20 0,#c84dff0d 35%,transparent 70%);filter:blur(20px)}
+.stack{position:relative;width:min(72vw,760px);aspect-ratio:3/2;filter:drop-shadow(0 30px 80px #000a)}
+.stack canvas{position:absolute;inset:0;width:100%;height:100%;will-change:transform,opacity,filter;transform-origin:50% 50%;pointer-events:none}
+.ui{position:fixed;z-index:5;inset:0;pointer-events:none;padding:28px;display:flex;flex-direction:column;justify-content:space-between}
+.top,.bottom{display:flex;justify-content:space-between;align-items:center;gap:20px}
+.label{font-size:12px;letter-spacing:.16em;text-transform:uppercase}
+.progress{width:160px;height:1px;background:#ffffff25;overflow:hidden}
+.progress i{display:block;height:100%;width:100%;background:#fff;transform:scaleX(0);transform-origin:left}
+.bottom{color:var(--muted);font-size:12px}
+.arrow{font-size:18px;color:#fff;animation:bob 1.7s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(7px)}}
+.grain{position:fixed;inset:-50%;pointer-events:none;opacity:.055;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.95' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.8'/%3E%3C/svg%3E");animation:grain .25s steps(2) infinite}
+@keyframes grain{0%{transform:translate(0)}25%{transform:translate(3%,-2%)}50%{transform:translate(-2%,3%)}75%{transform:translate(2%,2%)}100%{transform:translate(-3%,-3%)}}
+@media(max-width:700px){.stack{width:90vw}.ui{padding:18px}.progress{width:90px}}
+@media(prefers-reduced-motion:reduce){.arrow,.grain{animation:none}}
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="glow"></div>
+  <div class="stack" id="stack"></div>
+</div>
+<div class="ui">
+  <div class="top"><span class="label">Disintegration study</span><div class="progress"><i id="bar"></i></div></div>
+  <div class="bottom"><span>Прокрутите вниз — вверх для сборки</span><span class="arrow">↓</span></div>
+</div>
+<div class="grain"></div>
+<script>
+(()=>{
+const COUNT=64,REPEAT=2,W=720,H=480,stack=document.querySelector('#stack'),bar=document.querySelector('#bar');
+const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
+const ease=t=>1-Math.pow(1-t,3);
+const rand=(a,b)=>a+Math.random()*(b-a);
+function rounded(ctx,x,y,w,h,r){ctx.beginPath();ctx.roundRect(x,y,w,h,r)}
+function artwork(){
+ const c=document.createElement('canvas');c.width=W;c.height=H;
+ const g=c.getContext('2d');g.clearRect(0,0,W,H);g.save();rounded(g,22,22,W-44,H-44,38);g.clip();
+ let bg=g.createLinearGradient(0,0,W,H);bg.addColorStop(0,'#eef0f7');bg.addColorStop(.48,'#bfc7e8');bg.addColorStop(1,'#70769f');g.fillStyle=bg;g.fillRect(0,0,W,H);
+ let halo=g.createRadialGradient(505,185,0,505,185,260);halo.addColorStop(0,'#ffffffcc');halo.addColorStop(.22,'#84f7ff88');halo.addColorStop(.5,'#755cff44');halo.addColorStop(1,'transparent');g.fillStyle=halo;g.fillRect(0,0,W,H);
+ g.globalCompositeOperation='multiply';g.fillStyle='#171925';g.beginPath();g.arc(510,225,126,0,Math.PI*2);g.fill();
+ let orb=g.createRadialGradient(470,170,8,515,230,150);orb.addColorStop(0,'#fff');orb.addColorStop(.12,'#60f6ff');orb.addColorStop(.34,'#5957ff');orb.addColorStop(.62,'#d74dff');orb.addColorStop(1,'#171925');g.globalCompositeOperation='screen';g.fillStyle=orb;g.beginPath();g.arc(510,225,120,0,Math.PI*2);g.fill();
+ g.globalCompositeOperation='source-over';g.fillStyle='#11131b';g.font='700 68px Arial';g.letterSpacing='-3px';g.fillText('EGOR',66,145);g.fillText('DIGITAL',66,213);g.font='16px Arial';g.fillText('SCROLL / DISINTEGRATE',70,278);g.strokeStyle='#11131b';g.lineWidth=2;g.strokeRect(70,309,244,72);g.font='12px Arial';g.fillText('CREATIVE TECHNOLOGY',88,338);g.fillText('WEB · MOTION · CODE',88,364);g.fillStyle='#11131b';g.fillRect(0,H-58,W,58);g.fillStyle='#f6f7fb';g.font='12px Arial';g.fillText('A PROCEDURAL CANVAS POSTER',68,H-24);g.restore();g.strokeStyle='#ffffff55';g.lineWidth=2;rounded(g,22,22,W-44,H-44,38);g.stroke();return c;
+}
+function hash(x,y){let n=Math.sin(x*12.9898+y*78.233)*43758.5453;return n-Math.floor(n)}
+function build(){
+ const src=artwork(),ctx=src.getContext('2d'),img=ctx.getImageData(0,0,W,H),layers=[];
+ for(let i=0;i<COUNT;i++)layers.push(ctx.createImageData(W,H));
+ for(let y=0;y<H;y++)for(let x=0;x<W;x++){const p=(x+y*W)*4;if(img.data[p+3]===0)continue;for(let r=0;r<REPEAT;r++){const noise=hash(x+r*19,y+r*31);const idx=Math.min(COUNT-1,Math.floor(COUNT*(noise+2*x/W)/3));const d=layers[idx].data;d[p]=img.data[p];d[p+1]=img.data[p+1];d[p+2]=img.data[p+2];d[p+3]=img.data[p+3]}}
+ layers.forEach((data,i)=>{const c=document.createElement('canvas');c.width=W;c.height=H;c.getContext('2d').putImageData(data,0,0);const ang=rand(-Math.PI*.78,Math.PI*.78),side=i/(COUNT-1);c._fx={x:Math.cos(ang)*rand(70,220)+rand(40,170),y:Math.sin(ang)*rand(55,190)+rand(-40,40),rot:rand(-19,19),scale:rand(1.01,1.08),delay:side*.62};stack.appendChild(c)})
+}
+build();
+let current=0,target=0;
+function updateScroll(){const max=document.documentElement.scrollHeight-innerHeight;target=clamp(scrollY/max)}
+addEventListener('scroll',updateScroll,{passive:true});updateScroll();
+function frame(){
+ current+=(target-current)*.085;bar.style.transform=`scaleX(${current})`;const nodes=stack.children;
+ for(let i=0;i<nodes.length;i++){const c=nodes[i],f=c._fx;const local=clamp((current-f.delay)/.62);const e=ease(local);const turbulence=Math.sin(local*Math.PI)*Math.sin(i*2.13)*12;c.style.transform=`translate3d(${f.x*e}px,${f.y*e+turbulence}px,0) rotate(${f.rot*e}deg) scale(${1+(f.scale-1)*e})`;c.style.opacity=1-e;c.style.filter=`blur(${e*2.2}px)`}
+ requestAnimationFrame(frame)
+}
+requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
