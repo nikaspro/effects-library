@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "effects": [
+    {
+      "id": "ascii-cursor-field",
+      "name": "ASCII Cursor Field",
+      "description": "Символы собираются в текст, реагируют на курсор и плавно меняют композицию.",
+      "category": "cursor",
+      "interaction": ["pointer", "automatic-layout"],
+      "dependencies": [],
+      "demo": "/effects/ascii-cursor-field/",
+      "source": "/effects/ascii-cursor-field/index.html",
+      "customization": ["CONFIG.lines", "сила реакции курсора", "скорость смены композиций"],
+      "status": "approved"
+    },
+    {
+      "id": "webgl-footer-object",
+      "name": "WebGL Footer Object",
+      "description": "Процедурный 3D-объект реагирует на курсор и скорость прокрутки.",
+      "category": "webgl",
+      "interaction": ["pointer", "scroll"],
+      "dependencies": ["three.js", "EffectComposer", "UnrealBloomPass"],
+      "demo": "/effects/webgl-footer-object/",
+      "source": "/effects/webgl-footer-object/index.html",
+      "customization": ["форма объекта", "материалы", "сила вращения", "момент появления"],
+      "status": "approved"
+    },
+    {
+      "id": "scroll-disintegration",
+      "name": "Scroll Disintegration",
+      "description": "Изображение распадается на пиксельные слои при прокрутке и собирается обратно.",
+      "category": "scroll",
+      "interaction": ["scroll"],
+      "dependencies": [],
+      "demo": "/effects/scroll-disintegration/",
+      "source": "/effects/scroll-disintegration/index.html",
+      "customization": ["исходное изображение", "число слоёв", "направление распада", "дистанция"],
+      "status": "approved"
+    },
+    {
+      "id": "glass-header",
+      "name": "Glass Header",
+      "description": "Стеклянная навигация умеренно расширяется и слегка следует за курсором.",
+      "category": "hover",
+      "interaction": ["pointer"],
+      "dependencies": [],
+      "demo": "/effects/glass-header/",
+      "source": "/effects/glass-header/index.html",
+      "customization": ["compact/expanded размеры", "blur", "пункты меню", "инерция"],
+      "status": "approved"
+    },
+    {
+      "id": "ion-speaker",
+      "name": "ION Speaker Prototype",
+      "description": "WebGL-продукт меняет ракурс, свет и акцент на материале по сценам.",
+      "category": "product-storytelling",
+      "interaction": ["scroll", "pointer"],
+      "dependencies": ["three.js", "RoundedBoxGeometry"],
+      "demo": "/effects/ion-speaker/",
+      "source": "/effects/ion-speaker/index.html",
+      "customization": ["камера каждой сцены", "тексты", "материал", "паттерн", "свет"],
+      "status": "approved"
+    }
+  ]
+}
