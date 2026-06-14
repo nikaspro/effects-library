@@ -1,0 +1,12 @@
+{
+  "id": "scroll-disintegration",
+  "name": "Scroll Disintegration",
+  "description": "Изображение распадается на пиксельные слои при прокрутке и собирается обратно.",
+  "category": "scroll",
+  "interaction": ["scroll"],
+  "dependencies": [],
+  "demo": "/effects/scroll-disintegration/",
+  "source": "/effects/scroll-disintegration/index.html",
+  "customization": ["исходное изображение", "число слоёв", "направление распада", "дистанция"],
+  "status": "approved"
+}
