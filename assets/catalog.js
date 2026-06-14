@@ -26,6 +26,54 @@
   addEventListener('hashchange',()=>showPage(location.hash.slice(1),false));
   showPage(location.hash.slice(1),false);
 
+  const favoritesKey='valera-text-favorites';
+  const textGrid=document.querySelector('#textPage .grid');
+  let favorites=[];
+  try{favorites=JSON.parse(localStorage.getItem(favoritesKey)||'[]')}
+  catch{favorites=[]}
+
+  const textCards=[...document.querySelectorAll('#textPage .text-card')];
+
+  function renderFavorites(){
+    if(!textGrid)return;
+    const favoriteCards=favorites
+      .map(name=>textCards.find(card=>card.dataset.copy===name))
+      .filter(Boolean);
+    const regularCards=textCards.filter(card=>!favorites.includes(card.dataset.copy));
+
+    [...favoriteCards,...regularCards].forEach(card=>textGrid.appendChild(card));
+
+    textCards.forEach(card=>{
+      const active=favorites.includes(card.dataset.copy);
+      const button=card.querySelector('.favorite-toggle');
+      card.classList.toggle('is-favorite',active);
+      if(button){
+        button.classList.toggle('is-favorite',active);
+        button.setAttribute('aria-pressed',String(active));
+        button.setAttribute('aria-label',`${active?'Убрать':'Добавить'} ${card.dataset.copy} ${active?'из':'в'} избранное`);
+        button.title=active?'Убрать из избранного':'Добавить в избранное';
+      }
+    });
+  }
+
+  textCards.forEach(card=>{
+    const button=card.querySelector('.favorite-toggle');
+    if(!button)return;
+    button.addEventListener('click',event=>{
+      event.stopPropagation();
+      const name=card.dataset.copy;
+      if(favorites.includes(name)){
+        favorites=favorites.filter(item=>item!==name);
+      }else{
+        favorites.push(name);
+      }
+      localStorage.setItem(favoritesKey,JSON.stringify(favorites));
+      renderFavorites();
+    });
+  });
+
+  renderFavorites();
+
   document.querySelectorAll('[data-letters]').forEach(el=>{
     const text=el.textContent;
     el.innerHTML=[...text].map((char,i)=>
@@ -66,6 +114,7 @@
 
     card.addEventListener('click',copyEffect);
     card.addEventListener('keydown',e=>{
+      if(e.target.closest('.favorite-toggle'))return;
       if(e.key==='Enter'||e.key===' '){
         e.preventDefault();
         copyEffect();
